@@ -1,9 +1,9 @@
-# This is project that changes visibility of repository.
+# This is project changes visibility of repository.
 
-# To do this go to https://github.com/settings/developers and got to Personal access token -> Tokens(classic)
+# To do this go to https://github.com/settings/developers and go to Personal access token -> Tokens(classic)
 
 # Then generate new token and copy it
 
-# Then go to website and paste you token to token input filed then enter you github username
+# Then go to website and paste your token to token input field then enter you github username
 
 # Finally, now you can change your visibility of your repo
