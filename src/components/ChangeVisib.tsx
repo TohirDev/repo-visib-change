@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { Button } from "beauty-ui-components";
+import { useToast } from "./ui/use-toast";
+import { Toaster } from "./ui/toaster";
 
 interface Repo {
   name: string;
@@ -21,6 +23,7 @@ interface Repo {
 }
 
 const ChangeVisib: React.FC = () => {
+  const { toast } = useToast();
   const userName = getGithubUsername();
   const token = getUserToken();
   const navigate = useNavigate();
@@ -74,11 +77,20 @@ const ChangeVisib: React.FC = () => {
         );
       }
       await response.json();
-      console.log(
-        `Successfully changed repository visibility to ${isPrivate}`
-      );
-      fetchRepo(); // Refetch repositories
+      toast({
+        title: "Repository Changed",
+        description: `Your repository visibility changed to ${
+          isPrivate === "true" ? "Private" : "Public"
+        }`,
+        variant: "default",
+      });
+      fetchRepo(); // Refetch data after success
     } catch (error) {
+      toast({
+        title: "Error",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
       console.error((error as Error).message);
     }
   };
@@ -91,6 +103,8 @@ const ChangeVisib: React.FC = () => {
         alignItems: "center",
       }}
     >
+      <Button onClick={() => fetchRepo()}>refetch</Button>
+      <Toaster />
       <Select onValueChange={handleRepoChange}>
         <SelectTrigger className="w-[300px] mt-2">
           <SelectValue placeholder="Select repository" />
