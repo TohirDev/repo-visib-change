@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -8,12 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { useFetch } from "../hooks/useFetch";
 import { getGithubUsername, getUserToken } from "../globals";
 import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
-import { Button } from "beauty-ui-components";
+import { Button, Typography } from "beauty-ui-components";
 import { useToast } from "./ui/use-toast";
 import { Toaster } from "./ui/toaster";
 
@@ -29,46 +28,60 @@ const ChangeVisib: React.FC = () => {
   const navigate = useNavigate();
   const [repo, setRepo] = useState<string | null>(null);
   const [isPrivate, setIsPrivate] = useState<string>("false");
-  const [fetchRepo, { data }] = useFetch<Repo[]>(
-    `https://api.github.com/user/repos`,
-    {
-      headers: {
-        Authorization: `token ${token}`,
-        Accept: "application/vnd.github.v3+json",
-      },
+  const [data, setData] = useState<Repo[]>([]);
+
+  const fetchRepo = useCallback(async () => {
+    const url = "https://api.github.com/user/repos";
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const repos = await response.json();
+      setData(repos);
+    } catch (error) {
+      console.error("Error fetching user repositories:", error);
     }
-  );
+  }, [token]);
 
   useEffect(() => {
     if (!userName || !token) {
       navigate("/save-user");
+    } else {
+      fetchRepo();
     }
-    fetchRepo();
   }, [fetchRepo, userName, token, navigate]);
 
   const handleRepoChange = (repoName: string) => {
     setRepo(repoName);
-    const selectedRepo = data?.find((repo) => repo.name === repoName);
+    const selectedRepo = data.find((repo) => repo.name === repoName);
     if (selectedRepo) {
       setIsPrivate(selectedRepo.private.toString());
     }
   };
 
-  const url = `https://api.github.com/repos/${userName}/${repo}`;
-
-  const options = {
-    method: "PATCH",
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: "application/vnd.github.v3+json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      private: isPrivate === "true",
-    }),
-  };
-
   const changeVisib = async () => {
+    const url = `https://api.github.com/repos/${userName}/${repo}`;
+    const options = {
+      method: "PATCH",
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        private: isPrivate === "true",
+      }),
+    };
+
     try {
       const response = await fetch(url, options);
       if (!response.ok) {
@@ -84,7 +97,8 @@ const ChangeVisib: React.FC = () => {
         }`,
         variant: "default",
       });
-      fetchRepo(); // Refetch data after success
+      await fetchRepo(); // Refetch data after success
+      handleRepoChange(repo); // Update local state to reflect new visibility
     } catch (error) {
       toast({
         title: "Error",
@@ -103,7 +117,13 @@ const ChangeVisib: React.FC = () => {
         alignItems: "center",
       }}
     >
-      <Button onClick={() => fetchRepo()}>refetch</Button>
+      <Typography
+        variant="h3"
+        sx={{ width: "500px", textAlign: "center", marginTop: "20px" }}
+      >
+        Here you can change the visibility of your repo. After clicking
+        Change, click Refetch button to refetch data
+      </Typography>
       <Toaster />
       <Select onValueChange={handleRepoChange}>
         <SelectTrigger className="w-[300px] mt-2">
@@ -112,7 +132,7 @@ const ChangeVisib: React.FC = () => {
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Repos</SelectLabel>
-            {data?.map((repo, i) => (
+            {data.map((repo, i) => (
               <SelectItem key={repo.name + i} value={repo.name}>
                 {`${repo.name} ${repo.private ? "(Private)" : "(Public)"}`}
               </SelectItem>
@@ -144,6 +164,12 @@ const ChangeVisib: React.FC = () => {
         }}
       >
         Change
+      </Button>
+      <Button
+        onClick={() => fetchRepo()}
+        sx={{ width: "300px", marginTop: "10px" }}
+      >
+        Refetch
       </Button>
     </div>
   );
