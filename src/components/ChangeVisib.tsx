@@ -29,8 +29,9 @@ const ChangeVisib: React.FC = () => {
   const [repo, setRepo] = useState<string | null>(null);
   const [isPrivate, setIsPrivate] = useState<string>("false");
   const [data, setData] = useState<Repo[]>([]);
-
+  const [loading, setLoading] = useState(false);
   const fetchRepo = useCallback(async () => {
+    setLoading(true);
     const url = "https://api.github.com/user/repos";
 
     try {
@@ -39,6 +40,7 @@ const ChangeVisib: React.FC = () => {
           Authorization: `token ${token}`,
           Accept: "application/vnd.github.v3+json",
         },
+        cache: "no-store",
       });
 
       if (!response.ok) {
@@ -49,6 +51,8 @@ const ChangeVisib: React.FC = () => {
       setData(repos);
     } catch (error) {
       console.error("Error fetching user repositories:", error);
+    } finally {
+      setLoading(false);
     }
   }, [token]);
 
@@ -162,15 +166,16 @@ const ChangeVisib: React.FC = () => {
             changeVisib();
           }
         }}
+        disabled={loading}
       >
         Change
       </Button>
-      <Button
+      {/* <Button
         onClick={() => fetchRepo()}
         sx={{ width: "300px", marginTop: "10px" }}
       >
         Refetch
-      </Button>
+      </Button> */}
     </div>
   );
 };
