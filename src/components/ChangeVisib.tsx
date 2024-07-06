@@ -26,7 +26,7 @@ const ChangeVisib: React.FC = () => {
   const userName = getGithubUsername();
   const token = getUserToken();
   const navigate = useNavigate();
-  const [repo, setRepo] = useState<string | null>(null);
+  const [repo, setRepo] = useState<string>("");
   const [isPrivate, setIsPrivate] = useState<string>("false");
   const [data, setData] = useState<Repo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -101,8 +101,8 @@ const ChangeVisib: React.FC = () => {
         }`,
         variant: "default",
       });
-      await fetchRepo(); // Refetch data after success
-      handleRepoChange(repo); // Update local state to reflect new visibility
+      await fetchRepo();
+      handleRepoChange(repo);
     } catch (error) {
       toast({
         title: "Error",
