@@ -9,12 +9,12 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { getGithubUsername, getUserToken } from "../globals";
-import { useNavigate } from "react-router-dom";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Label } from "./ui/label";
+import { NavLink, useNavigate } from "react-router-dom";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
+import { Label } from "../components/ui/label";
 import { Button, Typography } from "beauty-ui-components";
-import { useToast } from "./ui/use-toast";
-import { Toaster } from "./ui/toaster";
+import { useToast } from "../components/ui/use-toast";
+import { Toaster } from "../components/ui/toaster";
 
 interface Repo {
   name: string;
@@ -119,16 +119,28 @@ const ChangeVisib: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        position: "relative",
       }}
     >
       <Typography
         variant="h3"
         sx={{ width: "500px", textAlign: "center", marginTop: "20px" }}
       >
-        Here you can change the visibility of your repo. After clicking
-        Change, click Refetch button to refetch data
+        In this page, you can change the visibility of your repo. ENJOY!!!
       </Typography>
       <Toaster />
+      <NavLink to={"/save-user"}>
+        <Button
+          variant="link"
+          sx={{
+            position: "absolute",
+            right: 10,
+            top: 10,
+          }}
+        >
+          Change Data
+        </Button>
+      </NavLink>
       <Select onValueChange={handleRepoChange}>
         <SelectTrigger className="w-[300px] mt-2">
           <SelectValue placeholder="Select repository" />
@@ -168,14 +180,8 @@ const ChangeVisib: React.FC = () => {
         }}
         disabled={loading}
       >
-        Change
+        {loading ? "Loading..." : "Change"}
       </Button>
-      {/* <Button
-        onClick={() => fetchRepo()}
-        sx={{ width: "300px", marginTop: "10px" }}
-      >
-        Refetch
-      </Button> */}
     </div>
   );
 };

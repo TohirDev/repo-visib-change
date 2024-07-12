@@ -7,8 +7,8 @@ import {
   setGithubUsername,
   setToken,
 } from "../globals";
-import { Input } from "./ui/input";
-import { useNavigate } from "react-router-dom";
+import { Input } from "../components/ui/input";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const SaveUser: React.FC = () => {
   const userRef = React.useRef<HTMLInputElement>(null);
@@ -38,9 +38,28 @@ const SaveUser: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        position: "relative",
       }}
     >
-      <Typography variant="h2">Change your repo visibility</Typography>
+      <NavLink to={"/change-visib"}>
+        <Button
+          variant="link"
+          sx={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+          }}
+        >
+          Change Repo Visib
+        </Button>
+      </NavLink>
+      <Typography
+        variant="h3"
+        sx={{ width: "40%", textAlign: "center", margin: "20px 0" }}
+      >
+        In this website you can change visibility of your repo. Befor that,
+        please enter your Github username, and Github personal token
+      </Typography>
       <Input
         ref={userRef}
         placeholder={`${

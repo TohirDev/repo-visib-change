@@ -1,8 +1,8 @@
 import React, { Suspense } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 
-const SaveUser = React.lazy(() => import("./components/SaveUser"));
-const ChangeVisib = React.lazy(() => import("./components/ChangeVisib"));
+const SaveUser = React.lazy(() => import("./pages/SaveUser"));
+const ChangeVisib = React.lazy(() => import("./pages/ChangeVisib"));
 
 export const Router = () => {
   const router = useRoutes([
